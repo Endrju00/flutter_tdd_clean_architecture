@@ -8,7 +8,6 @@ import 'package:mockito/annotations.dart';
 
 import 'get_concrete_number_trivia_test.mocks.dart';
 
-
 @GenerateMocks([NumberTriviaRepository])
 void main() {
   late GetConcreteNumberTrivia usecase;
@@ -29,7 +28,7 @@ void main() {
       when(mockNumberTriviaRepository.getConcreteNumberTrivia(any))
           .thenAnswer((_) async => const Right(tNumberTrivia));
       // act
-      final result = await usecase(number: tNumber);
+      final result = await usecase(const Params(number: tNumber));
       // assert
       expect(result, const Right(tNumberTrivia));
       verify(mockNumberTriviaRepository.getConcreteNumberTrivia(tNumber));
