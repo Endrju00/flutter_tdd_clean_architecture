@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,27 +38,30 @@ class NumberTriviaBloc extends Bloc<NumberTriviaEvent, NumberTriviaState> {
           (failure) => emit(const Error(message: invalidInputFailureMessage)),
           (integer) {
             emit(Loading());
-            getConcreteNumberTrivia(
-              Params(number: integer),
-            ).then((failureOrTrivia) {
-              failureOrTrivia.fold(
-                (failure) => emit(Error(message: _mapFailureToMessage(failure))),
-                (trivia) => emit(Loaded(trivia: trivia)),
-              );
-            });
+            getConcreteNumberTrivia(Params(number: integer)).then(
+              (failureOrTrivia) =>
+                  _eitherLoadedOrErrorState(failureOrTrivia, emit),
+            );
           },
         );
       }
       if (event is GetTriviaForRandomNumber) {
         emit(Loading());
-        getRandomNumberTrivia(NoParams()).then((failureOrTrivia) {
-          failureOrTrivia.fold(
-            (failure) => emit(Error(message: _mapFailureToMessage(failure))),
-            (trivia) => emit(Loaded(trivia: trivia)),
-          );
-        });
+        getRandomNumberTrivia(NoParams()).then(
+          (failureOrTrivia) => _eitherLoadedOrErrorState(failureOrTrivia, emit),
+        );
       }
     });
+  }
+
+  void _eitherLoadedOrErrorState(
+    Either<Failure, NumberTrivia> failureOrTrivia,
+    Emitter<NumberTriviaState> emit,
+  ) {
+    failureOrTrivia.fold(
+      (failure) => emit(Error(message: _mapFailureToMessage(failure))),
+      (trivia) => emit(Loaded(trivia: trivia)),
+    );
   }
 
   String _mapFailureToMessage(Failure failure) {
