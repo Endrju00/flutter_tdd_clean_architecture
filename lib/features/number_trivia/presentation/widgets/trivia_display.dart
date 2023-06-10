@@ -16,6 +16,7 @@ class TriviaDisplay extends StatelessWidget {
       height: MediaQuery.of(context).size.height / 3,
       child: Column(
         children: [
+          const SizedBox(height: 16),
           Text(
             numberTrivia.number.toString(),
             style: const TextStyle(
